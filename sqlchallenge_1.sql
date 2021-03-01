@@ -12,8 +12,10 @@ create table employees (
 	sex char(1) not null,
 	hire_date date not null
 	);
-	
-select * from employees;
+
+select count(emp_no) from employees;
+select * from employees
+order by hire_date;
 
 drop table departments;
 create table departments(
@@ -70,6 +72,33 @@ where e.hire_date between '1986-01-01' and '1986-01-31'
 order by e.hire_date;
 select * from table_1986_employees;
 select count(hire_date) from table_1986_employees as num_hired_1986;
+
+-- List the manager of each department with the following information: department number,
+-- department name, the manager's employee number, last name, first name.
+create view table_managers as
+select dm.dept_no, d.dept_name, dm.emp_no, e.last_name, e.first_name
+from departments as d
+join dept_manager as dm on dm.dept_no = d.dept_no
+join employees as e on dm.emp_no = e.emp_no
+order by dm.dept_no;
+select * from table_managers
+
+drop table table_managers_current;
+
+create table table_managers_current as
+select dept_no, max(emp_no) as "emp_no" from table_managers
+group by dept_no
+
+select * from table_managers_current;
+
+drop table current_managers;
+create view current_managers as
+select tm.dept_no, d.dept_name, tm.emp_no, e.last_name, e.first_name
+from departments as d
+join table_managers_current as tm on tm.dept_no = d.dept_no
+join employees as e on tm.emp_no = e.emp_no
+order by tm.dept_no;
+select * from current_managers
 
 
 
